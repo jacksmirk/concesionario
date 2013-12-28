@@ -17,9 +17,13 @@ $this->menu=array(
 
 <?php $this->widget('bootstrap.widgets.TbDetailView',array(
 	'data'=>$model,
-	'attributes'=>array(
+    'type'=>'striped bordered condensed',
+    'attributes'=>array(
 		'id',
-		'fabricanteid',
+		array(
+            'name'=>'fabricante_nombre',
+            'value'=>CHtml::encode($model->fabricante->nombre),
+        ),
 		'nombre',
 		'fecha_alta',
 		'fecha_mod',

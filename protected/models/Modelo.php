@@ -16,6 +16,7 @@
  */
 class Modelo extends CActiveRecord
 {
+    public $fabricante_nombre;
 	/**
 	 * @return string the associated database table name
 	 */
@@ -38,7 +39,7 @@ class Modelo extends CActiveRecord
 			array('fecha_mod', 'safe'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, fabricanteid, nombre, fecha_alta, fecha_mod', 'safe', 'on'=>'search'),
+			array('id, fabricanteid, fabricante_nombre, nombre, fecha_alta, fecha_mod', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -50,8 +51,8 @@ class Modelo extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'fabricante' => array(self::BELONGS_TO, 'Fabricantes', 'fabricanteid'),
-			'vehiculoses' => array(self::HAS_MANY, 'Vehiculos', 'modeloid'),
+			'fabricante' => array(self::BELONGS_TO, 'Fabricante', 'fabricanteid'),
+			'vehiculos' => array(self::HAS_MANY, 'Vehiculo', 'modeloid'),
 		);
 	}
 
@@ -63,6 +64,7 @@ class Modelo extends CActiveRecord
 		return array(
 			'id' => 'ID',
 			'fabricanteid' => 'Id de Fabricante',
+            'fabricante_nombre' => 'Fabricante',
 			'nombre' => 'Nombre',
 			'fecha_alta' => 'Fecha de Alta',
 			'fecha_mod' => 'Fecha de Modificación',
@@ -86,16 +88,33 @@ class Modelo extends CActiveRecord
 		// @todo Please modify the following code to remove attributes that should not be searched.
 
 		$criteria=new CDbCriteria;
+        $criteria->alias='Modelo';
+        $criteria->together=true;
+        $criteria->with=array('fabricante');
+		$criteria->compare('Modelo.id',$this->id,true);
+		$criteria->compare('Modelo.fabricanteid',$this->fabricanteid,true);
+        $criteria->compare('fabricante.nombre', $this->fabricante_nombre,true);
+		$criteria->compare('Modelo.nombre',$this->nombre,true);
+		$criteria->compare('Modelo.fecha_alta',$this->fecha_alta,true);
+		$criteria->compare('Modelo.fecha_mod',$this->fecha_mod,true);
 
-		$criteria->compare('id',$this->id,true);
-		$criteria->compare('fabricanteid',$this->fabricanteid,true);
-		$criteria->compare('nombre',$this->nombre,true);
-		$criteria->compare('fecha_alta',$this->fecha_alta,true);
-		$criteria->compare('fecha_mod',$this->fecha_mod,true);
+        // Create a custom sort
+        $sort=new CSort;
+        $sort->attributes=array(
+            'fabricanteid',
+            // For each relational attribute, create a 'virtual attribute' using the public variable name
+            'fabricante_nombre' => array(
+                'asc' => 'fabricante.nombre',
+                'desc' => 'fabricante.nombre DESC',
+                'label' => 'Fabricante',
+            ),
+            '*',
+        );
 
-		return new CActiveDataProvider($this, array(
-			'criteria'=>$criteria,
-		));
+        return new CActiveDataProvider($this, array(
+            'criteria'=>$criteria,
+            'sort'=>$sort,
+        ));
 	}
 
 	/**
@@ -108,4 +127,33 @@ class Modelo extends CActiveRecord
 	{
 		return parent::model($className);
 	}
+
+    public function getListaFabricantes() {
+        $fabricantes = Fabricante::model()->findAll();
+        $listaFabricantes = CHtml::listData($fabricantes,'id','nombre');
+        return $listaFabricantes;
+    }
+
+    public function getFabricanteModelo(){
+        $fabricante = Fabricante::model()->findByPk($this->fabricanteid);
+        return $fabricante->nombre . ' ' . $this->nombre;
+    }
+
+
+    protected function beforeValidate()
+    {
+        if($this->isNewRecord)
+        {
+            //set the create date, last updated date and the user doing the creating
+            $this->fecha_alta=$this->fecha_mod=new CDbExpression('NOW()');
+            //$this->create_user_id=$this->update_user_id=Yii::app()->user->id;
+        }
+        else {
+            //not a new record, so just set the last updated time and last updated user id
+            $this->fecha_mod=new CDbExpression('NOW()');
+            //$this->update_user_id=Yii::app()->user->id;
+        }
+
+        return parent::beforeValidate();
+    }
 }

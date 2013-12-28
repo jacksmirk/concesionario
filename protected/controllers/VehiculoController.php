@@ -8,21 +8,11 @@ class VehiculoController extends Controller
 	 */
 	public $layout='//layouts/column2';
 
-	/**
-	 * @return array action filters
-	 */
-	public function filters()
-	{
-		return array(
-			'accessControl', // perform access control for CRUD operations
-		);
-	}
-
-	/**
-	 * Specifies the access control rules.
-	 * This method is used by the 'accessControl' filter.
-	 * @return array access control rules
-	 */
+    /**
+     * Specifies the access control rules.
+     * This method is used by the 'accessControl' filter.
+     * @return array access control rules
+     */
     public function accessRules()
     {
         return array(
@@ -30,16 +20,16 @@ class VehiculoController extends Controller
                 'actions'=>array('index','view'),
                 'users'=>array('*'),
             ),
-            array('allow', // allow authenticated user to perform 'create' and 'update' actions
+            /*array('allow', // allow authenticated user to perform 'create' and 'update' actions
                 'actions'=>array('create'),
                 'users'=>array('@'),
-            ),
+            ),*/
             array('allow', // allow authenticated user to perform 'create' and 'update' actions
-                'actions'=>array('update'),
+                'actions'=>array('update','create','dynamicmodelos'),
                 'users'=>array('encargado'),
             ),
             array('allow', // allow admin user to perform 'admin' and 'delete' actions
-                'actions'=>array('admin','delete'),
+                'actions'=>array('admin','delete', 'update','create','dynamicmodelos'),
                 'users'=>array('admin'),
             ),
             array('deny',  // deny all users
@@ -177,4 +167,17 @@ class VehiculoController extends Controller
 			Yii::app()->end();
 		}
 	}
+
+    public function actionDynamicmodelos()
+    {
+        $data=Modelo::model()->findAll('fabricanteid=:fabricanteid',
+            array(':fabricanteid'=>(int) $_POST['Vehiculo']['fabricanteid']));
+
+        $data=CHtml::listData($data,'id','nombre');
+        foreach($data as $value=>$name)
+        {
+            echo CHtml::tag('option',
+                array('value'=>$value),CHtml::encode($name),true);
+        }
+    }
 }

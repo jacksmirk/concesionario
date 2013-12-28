@@ -154,6 +154,11 @@ class Motor extends CActiveRecord
         return $listaTipos;
     }
 
+    public function getMotorCompleto(){
+        $tipo = TipoMotor::model()->findByPk($this->tipomotorid);
+        return $tipo->tipo . ' ' . $tipo->fuente . ' ' . $this->cilindrada . 'cc ' . $this->potencia . 'CV ' . $this->consumo . 'l/100km ' . $this->emisiones . 'g/km';
+    }
+
     protected function beforeValidate()
     {
         if($this->isNewRecord)

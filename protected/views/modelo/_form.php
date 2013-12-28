@@ -7,13 +7,10 @@
 
 	<?php echo $form->errorSummary($model); ?>
 
-	<?php echo $form->textFieldRow($model,'fabricanteid',array('class'=>'span5','maxlength'=>11)); ?>
+    <?php echo $form->dropDownListRow($model, 'fabricanteid', $model->getListaFabricantes()); ?>
 
 	<?php echo $form->textFieldRow($model,'nombre',array('class'=>'span5','maxlength'=>45)); ?>
 
-	<?php echo $form->textFieldRow($model,'fecha_alta',array('class'=>'span5')); ?>
-
-	<?php echo $form->textFieldRow($model,'fecha_mod',array('class'=>'span5')); ?>
 
 	<div class="form-actions">
 		<?php $this->widget('bootstrap.widgets.TbButton', array(

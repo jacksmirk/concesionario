@@ -5,7 +5,7 @@
 
 	<?php echo $form->textFieldRow($model,'id',array('class'=>'span5','maxlength'=>11)); ?>
 
-	<?php echo $form->textFieldRow($model,'fabricanteid',array('class'=>'span5','maxlength'=>11)); ?>
+    <?php echo $form->textFieldRow($model,'fabricante_nombre',array('class'=>'span5')); ?>
 
 	<?php echo $form->textFieldRow($model,'nombre',array('class'=>'span5','maxlength'=>45)); ?>
 

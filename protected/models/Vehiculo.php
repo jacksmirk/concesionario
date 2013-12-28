@@ -33,6 +33,15 @@ class Vehiculo extends CActiveRecord
 		return 'tbl_vehiculos';
 	}
 
+    public $fabricante_nombre;
+    public $modelo_nombre;
+    public $motor_tipo;
+    public $motor_fuente;
+    public $motor_cilindrada;
+    public $motor_potencia;
+    public $motor_consumo;
+    public $motor_emision;
+
 	/**
 	 * @return array validation rules for model attributes.
 	 */
@@ -48,7 +57,9 @@ class Vehiculo extends CActiveRecord
 			array('fecha_fabricacion, fecha_mod', 'safe'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, fabricanteid, modeloid, motorid, transmision, color, fecha_fabricacion, fecha_alta, fecha_mod, disponible', 'safe', 'on'=>'search'),
+			array('id, fabricanteid, fabricante_nombre, modeloid, modelo_nombre, motorid, motor_tipo, motor_fuente,
+			    motor_cilindrada, motor_potencia, motor_consumo, motor_emision, transmision, color, fecha_fabricacion,
+			    fecha_alta, fecha_mod, disponible', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -60,12 +71,13 @@ class Vehiculo extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'coches' => array(self::HAS_ONE, 'Coches', 'vehiculoid'),
-			'comprases' => array(self::HAS_MANY, 'Compras', 'vehiculoid'),
-			'motocicletas' => array(self::HAS_ONE, 'Motocicletas', 'vehiculoid'),
-			'fabricante' => array(self::BELONGS_TO, 'Fabricantes', 'fabricanteid'),
-			'modelo' => array(self::BELONGS_TO, 'Modelos', 'modeloid'),
-			'motor' => array(self::BELONGS_TO, 'Motores', 'motorid'),
+			'coche' => array(self::HAS_ONE, 'Coche', 'vehiculoid'),
+			'compra' => array(self::HAS_MANY, 'Compra', 'vehiculoid'),
+			'motocicleta' => array(self::HAS_ONE, 'Motocicleta', 'vehiculoid'),
+			'fabricante' => array(self::BELONGS_TO, 'Fabricante', 'fabricanteid'),
+			'modelo' => array(self::BELONGS_TO, 'Modelo', 'modeloid'),
+
+			'motor' => array(self::BELONGS_TO, 'Motor', 'motorid'),
 		);
 	}
 
@@ -76,9 +88,17 @@ class Vehiculo extends CActiveRecord
 	{
 		return array(
 			'id' => 'ID',
-			'fabricanteid' => 'Id de Fabricante',
-			'modeloid' => 'Id de Modelo',
-			'motorid' => 'Id de Motor',
+			'fabricanteid' => 'Fabricante',
+            'fabricante_nombre' => 'Fabricante',
+			'modeloid' => 'Modelo',
+            'modelo_nombre' => 'Modelo',
+			'motorid' => 'Motor',
+            'motor_tipo' => 'Tipo de Motor',
+            'motor_fuente' => 'Fuente de Energía',
+            'motor_cilindrada' => 'Cilindrada',
+            'motor_potencia' => 'Potencia',
+            'motor_consumo' => 'Consumo',
+            'motor_emision' => 'Emisión CO2',
 			'transmision' => 'Transmisión',
 			'color' => 'Color',
 			'fecha_fabricacion' => 'Fecha de Fabricación',
@@ -132,4 +152,26 @@ class Vehiculo extends CActiveRecord
 	{
 		return parent::model($className);
 	}
+
+    public function getListaFabricantes() {
+        $fabricantes = Fabricante::model()->findAll();
+        $listaFabricantes = CHtml::listData($fabricantes,'id','nombre');
+        return $listaFabricantes;
+    }
+
+    public function getListaModelos() {
+        $modelos = Modelo::model()->findAll();
+        $data = CHtml::listData($modelos,'id','fabricanteModelo');
+        asort($data);
+        return $data;
+
+    }
+
+    public function getListaMotores() {
+        $motores = Motor::model()->findAll();
+        $data = CHtml::listData($motores,'id','motorCompleto');
+        asort($data);
+        return $data;
+
+    }
 }

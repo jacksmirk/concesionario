@@ -111,4 +111,21 @@ class Fabricante extends CActiveRecord
 	{
 		return parent::model($className);
 	}
+
+    protected function beforeValidate()
+    {
+        if($this->isNewRecord)
+        {
+            //set the create date, last updated date and the user doing the creating
+            $this->fecha_alta=$this->fecha_mod=new CDbExpression('NOW()');
+            //$this->create_user_id=$this->update_user_id=Yii::app()->user->id;
+        }
+        else {
+            //not a new record, so just set the last updated time and last updated user id
+            $this->fecha_mod=new CDbExpression('NOW()');
+            //$this->update_user_id=Yii::app()->user->id;
+        }
+
+        return parent::beforeValidate();
+    }
 }
