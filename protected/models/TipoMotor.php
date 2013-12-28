@@ -97,4 +97,8 @@ class TipoMotor extends CActiveRecord
 	{
 		return parent::model($className);
 	}
+
+    public function getTipoCompleto() {
+        return $this->tipo . ' / ' . $this ->fuente;
+    }
 }

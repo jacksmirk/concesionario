@@ -17,9 +17,11 @@ $this->menu=array(
 
 <?php $this->widget('bootstrap.widgets.TbDetailView',array(
 	'data'=>$model,
+    'type'=>'striped bordered condensed',
 	'attributes'=>array(
 		'id',
-		'tipomotorid',
+		'tipomotor.tipo',
+        'tipomotor.fuente',
 		'cilindrada',
 		'potencia',
 		'consumo',

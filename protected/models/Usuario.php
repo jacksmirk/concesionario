@@ -113,4 +113,8 @@ class Usuario extends CActiveRecord
 	{
 		return parent::model($className);
 	}
+
+    public function validatePassword($password){
+        return $password===$this->password;
+    }
 }

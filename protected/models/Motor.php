@@ -14,11 +14,15 @@
  * @property string $fecha_mod
  *
  * The followings are the available model relations:
- * @property TiposMotores $tipomotor
- * @property Vehiculos[] $vehiculoses
+ * @property TipoMotor $tipomotor
+ * @property Vehiculos[] $vehiculos
  */
+
 class Motor extends CActiveRecord
 {
+    public $tipomotor_tipo;
+    public $tipomotor_fuente;
+
 	/**
 	 * @return string the associated database table name
 	 */
@@ -41,7 +45,7 @@ class Motor extends CActiveRecord
 			array('fecha_mod', 'safe'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, tipomotorid, cilindrada, potencia, consumo, emisiones, fecha_alta, fecha_mod', 'safe', 'on'=>'search'),
+			array('id, tipomotorid, tipomotor_tipo, tipomotor_fuente, cilindrada, potencia, consumo, emisiones, fecha_alta, fecha_mod', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -53,8 +57,9 @@ class Motor extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'tipomotor' => array(self::BELONGS_TO, 'TiposMotores', 'tipomotorid'),
-			'vehiculoses' => array(self::HAS_MANY, 'Vehiculos', 'motorid'),
+			'tipomotor' => array(self::BELONGS_TO, 'TipoMotor', 'tipomotorid'),
+
+			'vehiculos' => array(self::HAS_MANY, 'Vehiculo', 'motorid'),
 		);
 	}
 
@@ -66,6 +71,8 @@ class Motor extends CActiveRecord
 		return array(
 			'id' => 'ID',
 			'tipomotorid' => 'Id de Tipo de Motor',
+            'tipomotor_tipo'=>'Tipo de Motor',
+            'tipomotor_fuente'=>'Fuente de Energía',
 			'cilindrada' => 'Cilindrada',
 			'potencia' => 'Potencia',
 			'consumo' => 'Consumo',
@@ -92,18 +99,41 @@ class Motor extends CActiveRecord
 		// @todo Please modify the following code to remove attributes that should not be searched.
 
 		$criteria=new CDbCriteria;
+        $criteria->alias='Motor';
+        $criteria->together=true;
+        $criteria->with=array('tipomotor');
+		$criteria->compare('Motor.id',$this->id,true);
+		$criteria->compare('Motor.tipomotorid',$this->tipomotorid,true);
+        $criteria->compare('tipomotor.tipo',$this->tipomotor_tipo,true);
+        $criteria->compare('tipomotor.fuente', $this->tipomotor_fuente);
+		$criteria->compare('Motor.cilindrada',$this->cilindrada);
+		$criteria->compare('Motor.potencia',$this->potencia);
+		$criteria->compare('Motor.consumo',$this->consumo);
+		$criteria->compare('Motor.emisiones',$this->emisiones);
+		$criteria->compare('Motor.fecha_alta',$this->fecha_alta,true);
+		$criteria->compare('Motor.fecha_mod',$this->fecha_mod,true);
 
-		$criteria->compare('id',$this->id,true);
-		$criteria->compare('tipomotorid',$this->tipomotorid,true);
-		$criteria->compare('cilindrada',$this->cilindrada);
-		$criteria->compare('potencia',$this->potencia);
-		$criteria->compare('consumo',$this->consumo);
-		$criteria->compare('emisiones',$this->emisiones);
-		$criteria->compare('fecha_alta',$this->fecha_alta,true);
-		$criteria->compare('fecha_mod',$this->fecha_mod,true);
+        // Create a custom sort
+        $sort=new CSort;
+        $sort->attributes=array(
+            'tipomotorid',
+            // For each relational attribute, create a 'virtual attribute' using the public variable name
+            'tipomotor_tipo' => array(
+                'asc' => 'tipomotor.tipo',
+                'desc' => 'tipomotor.tipo DESC',
+                'label' => 'Tipo de Motor',
+            ),
+            'tipomotor_fuente' => array(
+                'asc' => 'tipomotor.fuente',
+                'desc' => 'tipomotor.fuente DESC',
+                'label' => 'Fuente de Energía',
+            ),
+            '*',
+        );
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
+            'sort'=>$sort,
 		));
 	}
 
@@ -117,4 +147,27 @@ class Motor extends CActiveRecord
 	{
 		return parent::model($className);
 	}
+
+    public function getListaTipos() {
+        $tipos = TipoMotor::model()->findAll();
+        $listaTipos = CHtml::listData($tipos,'id','tipoCompleto');
+        return $listaTipos;
+    }
+
+    protected function beforeValidate()
+    {
+        if($this->isNewRecord)
+        {
+            //set the create date, last updated date and the user doing the creating
+            $this->fecha_alta=$this->fecha_mod=new CDbExpression('NOW()');
+            //$this->create_user_id=$this->update_user_id=Yii::app()->user->id;
+        }
+        else {
+            //not a new record, so just set the last updated time and last updated user id
+            $this->fecha_mod=new CDbExpression('NOW()');
+            //$this->update_user_id=Yii::app()->user->id;
+        }
+
+        return parent::beforeValidate();
+    }
 }
