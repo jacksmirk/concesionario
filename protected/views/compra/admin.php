@@ -43,10 +43,9 @@ or <b>=</b>) at the beginning of each of your search values to specify how the c
 	'filter'=>$model,
 	'columns'=>array(
 		'id',
-		'cuentaid',
+		'clienteid',
 		'vehiculoid',
 		'precio',
-		'metodo_pago',
 		'fecha_compra',
 		array(
 			'class'=>'bootstrap.widgets.TbButtonColumn',

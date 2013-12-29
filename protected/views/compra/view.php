@@ -19,10 +19,9 @@ $this->menu=array(
 	'data'=>$model,
 	'attributes'=>array(
 		'id',
-		'cuentaid',
+		'clienteid',
 		'vehiculoid',
 		'precio',
-		'metodo_pago',
 		'fecha_compra',
 	),
 )); ?>

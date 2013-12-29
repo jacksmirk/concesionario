@@ -121,7 +121,65 @@ class VehiculoController extends Controller
 	 */
 	public function actionIndex()
 	{
-		$dataProvider=new CActiveDataProvider('Vehiculo');
+		$criteria = new CDbCriteria();
+        $criteria->with=array(
+            'fabricante',
+            'modelo',
+            'motor',
+            'tipomotor',
+        );
+        $sort=new CSort;
+        $sort->attributes=array(
+            'motorid',
+            // For each relational attribute, create a 'virtual attribute' using the public variable name
+            'tipomotor_tipo' => array(
+                'asc' => 'tipomotor.tipo',
+                'desc' => 'tipomotor.tipo DESC',
+                'label' => 'Tipo de Motor',
+            ),
+            'tipomotor_fuente' => array(
+                'asc' => 'tipomotor.fuente',
+                'desc' => 'tipomotor.fuente DESC',
+                'label' => 'Fuente de Energía',
+            ),
+            'fabricante_nombre' => array(
+                'asc' => 'fabricante.nombre',
+                'desc' => 'fabricante.nombre DESC',
+                'label' => 'Fabricante',
+            ),
+            'modelo_nombre' => array(
+                'asc' => 'modelo.nombre',
+                'desc' => 'modelo.nombre DESC',
+                'label' => 'Modelo',
+            ),
+            'motor_cilindrada' => array(
+                'asc' => 'motor.cilindrada',
+                'desc' => 'motor.cilindrada DESC',
+                'label' => 'Cilindrada',
+            ),
+            'motor_potencia' => array(
+                'asc' => 'motor.potencia',
+                'desc' => 'motor.potencia DESC',
+                'label' => 'CV',
+            ),
+            'motor_consumo' => array(
+                'asc' => 'motor.consumo',
+                'desc' => 'motor.consumo DESC',
+                'label' => 'l/100km',
+            ),
+            'motor_emision' => array(
+                'asc' => 'motor.emisiones',
+                'desc' => 'motor.emisiones DESC',
+                'label' => 'CO2',
+            ),
+            '*',
+        );
+
+
+        $dataProvider=new CActiveDataProvider('Vehiculo', array(
+            'criteria'=>$criteria,
+            'sort'=>$sort,
+        ));
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
 		));

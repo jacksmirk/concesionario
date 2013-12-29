@@ -35,8 +35,8 @@ class Vehiculo extends CActiveRecord
 
     public $fabricante_nombre;
     public $modelo_nombre;
-    public $motor_tipo;
-    public $motor_fuente;
+    public $tipomotor_tipo;
+    public $tipomotor_fuente;
     public $motor_cilindrada;
     public $motor_potencia;
     public $motor_consumo;
@@ -57,7 +57,7 @@ class Vehiculo extends CActiveRecord
 			array('fecha_fabricacion, fecha_mod', 'safe'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, fabricanteid, fabricante_nombre, modeloid, modelo_nombre, motorid, motor_tipo, motor_fuente,
+			array('id, fabricanteid, fabricante_nombre, modeloid, modelo_nombre, motorid, tipomotor_tipo, tipomotor_fuente,
 			    motor_cilindrada, motor_potencia, motor_consumo, motor_emision, transmision, color, fecha_fabricacion,
 			    fecha_alta, fecha_mod, disponible', 'safe', 'on'=>'search'),
 		);
@@ -76,8 +76,8 @@ class Vehiculo extends CActiveRecord
 			'motocicleta' => array(self::HAS_ONE, 'Motocicleta', 'vehiculoid'),
 			'fabricante' => array(self::BELONGS_TO, 'Fabricante', 'fabricanteid'),
 			'modelo' => array(self::BELONGS_TO, 'Modelo', 'modeloid'),
-
 			'motor' => array(self::BELONGS_TO, 'Motor', 'motorid'),
+            'tipomotor' => array('BelongsToThrough', 'TipoMotor', array('tipomotorid'=>'id'), 'through' => 'motor'),
 		);
 	}
 
@@ -93,13 +93,13 @@ class Vehiculo extends CActiveRecord
 			'modeloid' => 'Modelo',
             'modelo_nombre' => 'Modelo',
 			'motorid' => 'Motor',
-            'motor_tipo' => 'Tipo de Motor',
-            'motor_fuente' => 'Fuente de Energía',
+            'tipomotor_tipo' => 'Tipo de Motor',
+            'tipomotor_fuente' => 'Fuente de Energía',
             'motor_cilindrada' => 'Cilindrada',
-            'motor_potencia' => 'Potencia',
-            'motor_consumo' => 'Consumo',
-            'motor_emision' => 'Emisión CO2',
-			'transmision' => 'Transmisión',
+            'motor_potencia' => 'CV',
+            'motor_consumo' => 'l/100km',
+            'motor_emision' => 'CO2',
+			'transmision' => 'Transmisión Automática',
 			'color' => 'Color',
 			'fecha_fabricacion' => 'Fecha de Fabricación',
 			'fecha_alta' => 'Fecha de Alta',
@@ -125,20 +125,83 @@ class Vehiculo extends CActiveRecord
 		// @todo Please modify the following code to remove attributes that should not be searched.
 
 		$criteria=new CDbCriteria;
+        $criteria->alias='vehiculo';
+        $criteria->with=array(
+            'fabricante',
+            'modelo',
+            'motor',
+            'tipomotor',
+        );
+		$criteria->compare('vehiculo.id',$this->id,true);
+		$criteria->compare('vehiculo.fabricanteid',$this->fabricanteid,true);
+        $criteria->compare('fabricante.nombre',$this->fabricante_nombre,true);
+        $criteria->compare('modelo.nombre',$this->modelo_nombre,true);
+        $criteria->compare('tipomotor.tipo',$this->tipomotor_tipo,true);
+        $criteria->compare('tipomotor.fuente',$this->tipomotor_fuente,true);
+        $criteria->compare('motor.cilindrada',$this->motor_cilindrada,true);
+        $criteria->compare('motor.potencia',$this->motor_potencia,true);
+        $criteria->compare('motor.consumo',$this->motor_consumo,true);
+        $criteria->compare('motor.emisiones',$this->motor_emision,true);
+        $criteria->compare('vehiculo.modeloid',$this->modeloid,true);
+		$criteria->compare('vehiculo.motorid',$this->motorid,true);
+		$criteria->compare('vehiculo.transmision',$this->transmision,true);
+		$criteria->compare('vehiculo.color',$this->color,true);
+		$criteria->compare('vehiculo.fecha_fabricacion',$this->fecha_fabricacion,true);
+		$criteria->compare('vehiculo.fecha_alta',$this->fecha_alta,true);
+		$criteria->compare('vehiculo.fecha_mod',$this->fecha_mod,true);
+		$criteria->compare('vehiculo.disponible',$this->disponible);
 
-		$criteria->compare('id',$this->id,true);
-		$criteria->compare('fabricanteid',$this->fabricanteid,true);
-		$criteria->compare('modeloid',$this->modeloid,true);
-		$criteria->compare('motorid',$this->motorid,true);
-		$criteria->compare('transmision',$this->transmision,true);
-		$criteria->compare('color',$this->color,true);
-		$criteria->compare('fecha_fabricacion',$this->fecha_fabricacion,true);
-		$criteria->compare('fecha_alta',$this->fecha_alta,true);
-		$criteria->compare('fecha_mod',$this->fecha_mod,true);
-		$criteria->compare('disponible',$this->disponible);
+        //Custom Sort
+        $sort=new CSort;
+        $sort->attributes=array(
+            //'tipomotorid',
+            // For each relational attribute, create a 'virtual attribute' using the public variable name
+            'tipomotor_tipo' => array(
+                'asc' => 'tipomotor.tipo',
+                'desc' => 'tipomotor.tipo DESC',
+                'label' => 'Tipo de Motor',
+            ),
+            'tipomotor_fuente' => array(
+                'asc' => 'tipomotor.fuente',
+                'desc' => 'tipomotor.fuente DESC',
+                'label' => 'Fuente de Energía',
+            ),
+            'fabricante_nombre' => array(
+                'asc' => 'fabricante.nombre',
+                'desc' => 'fabricante.nombre DESC',
+                'label' => 'Fabricante',
+            ),
+            'modelo_nombre' => array(
+                'asc' => 'modelo.nombre',
+                'desc' => 'modelo.nombre DESC',
+                'label' => 'Modelo',
+            ),
+            'motor_cilindrada' => array(
+                'asc' => 'motor.cilindrada',
+                'desc' => 'motor.cilindrada DESC',
+                'label' => 'Cilindrada',
+            ),
+            'motor_potencia' => array(
+                'asc' => 'motor.potencia',
+                'desc' => 'motor.potencia DESC',
+                'label' => 'CV',
+            ),
+            'motor_consumo' => array(
+                'asc' => 'motor.consumo',
+                'desc' => 'motor.consumo DESC',
+                'label' => 'l/100km',
+            ),
+            'motor_emision' => array(
+                'asc' => 'motor.emisiones',
+                'desc' => 'motor.emisiones DESC',
+                'label' => 'CO2',
+            ),
+            '*',
+        );
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
+            'sort'=>$sort,
 		));
 	}
 
@@ -173,5 +236,39 @@ class Vehiculo extends CActiveRecord
         asort($data);
         return $data;
 
+    }
+
+    public function getDisponible(){
+        return ($this->disponible==1)?'Sí':'No';
+    }
+
+    public function getTransmisionAutomatica(){
+        return ($this->transmision==1)?'Sí':'No';
+    }
+
+    protected function beforeValidate()
+    {
+        if($this->isNewRecord)
+        {
+            //set the create date, last updated date and the user doing the creating
+            $this->fecha_alta=$this->fecha_mod=new CDbExpression('NOW()');
+            //$this->create_user_id=$this->update_user_id=Yii::app()->user->id;
+        }
+        else {
+            //not a new record, so just set the last updated time and last updated user id
+            $this->fecha_mod=new CDbExpression('NOW()');
+            //$this->update_user_id=Yii::app()->user->id;
+        }
+        if($this->modeloid){
+            $modelo = Modelo::model()->findByPk($this->modeloid);
+            $this->fabricanteid=$modelo->fabricanteid;
+        }
+        if(!$this->color){
+            $this->color='#ffffff';
+        }
+        if(!$this->fecha_fabricacion){
+            $this->fecha_fabricacion=new CDbExpression('NOW()');
+        }
+        return parent::beforeValidate();
     }
 }

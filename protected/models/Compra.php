@@ -5,15 +5,14 @@
  *
  * The followings are the available columns in table 'tbl_compras':
  * @property string $id
- * @property string $cuentaid
+ * @property string $clienteid
  * @property string $vehiculoid
  * @property integer $precio
- * @property string $metodo_pago
  * @property string $fecha_compra
  *
  * The followings are the available model relations:
+ * @property Clientes $cliente
  * @property Vehiculos $vehiculo
- * @property Cuentas $cuenta
  */
 class Compra extends CActiveRecord
 {
@@ -33,13 +32,12 @@ class Compra extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('cuentaid, vehiculoid, fecha_compra', 'required'),
+			array('clienteid, vehiculoid, fecha_compra', 'required'),
 			array('precio', 'numerical', 'integerOnly'=>true),
-			array('cuentaid, vehiculoid', 'length', 'max'=>11),
-			array('metodo_pago', 'length', 'max'=>45),
+			array('clienteid, vehiculoid', 'length', 'max'=>11),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, cuentaid, vehiculoid, precio, metodo_pago, fecha_compra', 'safe', 'on'=>'search'),
+			array('id, clienteid, vehiculoid, precio, fecha_compra', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -51,8 +49,8 @@ class Compra extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
+			'cliente' => array(self::BELONGS_TO, 'Clientes', 'clienteid'),
 			'vehiculo' => array(self::BELONGS_TO, 'Vehiculos', 'vehiculoid'),
-			'cuenta' => array(self::BELONGS_TO, 'Cuentas', 'cuentaid'),
 		);
 	}
 
@@ -63,10 +61,9 @@ class Compra extends CActiveRecord
 	{
 		return array(
 			'id' => 'ID',
-			'cuentaid' => 'Id de Cliente',
+			'clienteid' => 'Id de Cliente',
 			'vehiculoid' => 'Id de Vehículo',
 			'precio' => 'Precio',
-			'metodo_pago' => 'Método de Pago',
 			'fecha_compra' => 'Fecha de Compra',
 		);
 	}
@@ -90,10 +87,9 @@ class Compra extends CActiveRecord
 		$criteria=new CDbCriteria;
 
 		$criteria->compare('id',$this->id,true);
-		$criteria->compare('cuentaid',$this->cuentaid,true);
+		$criteria->compare('clienteid',$this->clienteid,true);
 		$criteria->compare('vehiculoid',$this->vehiculoid,true);
 		$criteria->compare('precio',$this->precio);
-		$criteria->compare('metodo_pago',$this->metodo_pago,true);
 		$criteria->compare('fecha_compra',$this->fecha_compra,true);
 
 		return new CActiveDataProvider($this, array(

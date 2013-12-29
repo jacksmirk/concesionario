@@ -43,17 +43,49 @@ or <b>=</b>) at the beginning of each of your search values to specify how the c
 	'filter'=>$model,
 	'columns'=>array(
 		'id',
-		'fabricanteid',
-		'modeloid',
-		'motorid',
-		'transmision',
-		'color',
-		/*
-		'fecha_fabricacion',
-		'fecha_alta',
-		'fecha_mod',
-		'disponible',
-		*/
+        array(
+            'name' => 'fabricante_nombre',
+            'value' => '$data->fabricante->nombre',
+        ),
+        array(
+            'name' => 'modelo_nombre',
+            'value' => '$data->modelo->nombre',
+        ),
+        array(
+            'name' => 'tipomotor_tipo',
+            'value' => '$data->motor->tipomotor->tipo',
+        ),
+        array(
+            'name' => 'tipomotor_fuente',
+            'value' => '$data->motor->tipomotor->fuente',
+        ),
+        array(
+            'name' => 'motor_cilindrada',
+            'value' => '$data->motor->cilindrada',
+        ),
+        array(
+            'name' => 'motor_potencia',
+            'value' => '$data->motor->potencia',
+        ),
+        array(
+            'name' => 'motor_consumo',
+            'value' => '$data->motor->consumo',
+        ),
+        array(
+            'name' => 'motor_emision',
+            'value' => '$data->motor->emisiones',
+        ),
+        array(
+            'name'=>'transmision',
+            'value'=>'$data->getTransmisionAutomatica()',
+        ),        'color',
+        'fecha_fabricacion',
+        'fecha_alta',
+        'fecha_mod',
+        array(
+            'name'=>'disponible',
+            'value'=>'$data->getDisponible()'
+        ),
 		array(
 			'class'=>'bootstrap.widgets.TbButtonColumn',
 		),

@@ -14,27 +14,10 @@
     <?php echo $form->labelEx($model, 'motorid'); ?>
 	<?php echo $form->dropDownList($model,'motorid', $model->getListaMotores()); ?>
 
-<!--	--><?php /*echo $form->textFieldRow($model,'transmision',array('class'=>'span5','maxlength'=>45)); */?>
-
-    <?php echo $form->labelEx($model, 'transmision'); ?>
-    <?php $this->widget('bootstrap.widgets.TbButtonGroup', array(
-        'type' => 'primary',
-        'toggle' => 'radio', // 'checkbox' or 'radio'
-        'buttons' => array(
-            array('label'=>'Manual', 'htmlOptions' => array(
-                'data-field' => 'Vehiculo_transmision',
-                'data-value' => 'Manual',
-            )),
-            array('label'=>'Automática', 'htmlOptions' => array(
-                'data-field' => 'Vehiculo_transmision',
-                'data-value' => 'Automática',
-            )),
-        ),
-    )); ?>
-    <?php echo $form->hiddenField($model, 'transmision'); ?>
+    <?php echo $form->label($model, 'transmision'); ?>
+    <?php echo $form->checkBox($model, 'transmision'); ?>
 <br/>
 <br/>
-
 	<?php echo $form->labelEx($model,'color'); ?>
     <?php $this->widget('ext.SMiniColors.SActiveColorPicker', array(
         'model' => $model,
@@ -45,15 +28,30 @@
     ));?>
 <br/>
 <br/>
+<?php echo $form->labelEx($model,'fecha_fabricacion'); ?>
 
-	<?php echo $form->textFieldRow($model,'fecha_fabricacion',array('class'=>'span5')); ?>
-
-	<?php echo $form->textFieldRow($model,'fecha_alta',array('class'=>'span5')); ?>
-
-	<?php echo $form->textFieldRow($model,'fecha_mod',array('class'=>'span5')); ?>
-
-	<?php echo $form->textFieldRow($model,'disponible',array('class'=>'span5')); ?>
-
+    <?php
+    // widget
+    $this->widget('zii.widgets.jui.CJuiDatePicker', array(
+        'language'=>'en',
+        'model'=>$model,
+        'attribute'=>'fecha_fabricacion',
+        'flat'=>false,
+        'options'=>array(
+            'firstDay'=>1,
+            'showOn'=>"focus",
+            'constrainInput'=>true,
+            'currentText'=>'Hoy',
+            'dateFormat'=>'yy/mm/dd',
+        ),
+        'htmlOptions'=>array(
+        ),
+    ));
+    ?>
+<div>
+    <?php echo $form->labelEx($model, 'disponible'); ?>
+    <?php echo $form->checkBox($model, 'disponible'); ?>
+</div>
 	<div class="form-actions">
 		<?php $this->widget('bootstrap.widgets.TbButton', array(
 			'buttonType'=>'submit',

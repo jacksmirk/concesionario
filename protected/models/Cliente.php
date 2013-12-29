@@ -4,17 +4,14 @@
  * This is the model class for table "tbl_clientes".
  *
  * The followings are the available columns in table 'tbl_clientes':
- * @property string $userid
+ * @property string $id
  * @property string $nombre
  * @property integer $telefono
  * @property string $fecha_alta
  * @property string $fecha_mod
  *
  * The followings are the available model relations:
- * @property Usuarios $user
  * @property Cuentas[] $cuentases
- * @property Empresas $empresas
- * @property Particulares $particulares
  */
 class Cliente extends CActiveRecord
 {
@@ -34,14 +31,14 @@ class Cliente extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('userid, fecha_alta', 'required'),
+			array('fecha_alta', 'required'),
 			array('telefono', 'numerical', 'integerOnly'=>true),
-			array('userid', 'length', 'max'=>11),
+			array('id', 'length', 'max'=>11),
 			array('nombre', 'length', 'max'=>45),
 			array('fecha_mod', 'safe'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('userid, nombre, telefono, fecha_alta, fecha_mod', 'safe', 'on'=>'search'),
+			array('id, nombre, telefono, fecha_alta, fecha_mod', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -53,10 +50,7 @@ class Cliente extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'user' => array(self::BELONGS_TO, 'Usuarios', 'userid'),
-			'cuentases' => array(self::HAS_MANY, 'Cuentas', 'clienteid'),
-			'empresas' => array(self::HAS_ONE, 'Empresas', 'clientid'),
-			'particulares' => array(self::HAS_ONE, 'Particulares', 'clientid'),
+			'cuentas' => array(self::HAS_MANY, 'Cuenta', 'clienteid'),
 		);
 	}
 
@@ -66,7 +60,7 @@ class Cliente extends CActiveRecord
 	public function attributeLabels()
 	{
 		return array(
-			'userid' => 'Id de Usuario',
+			'id' => 'Id',
 			'nombre' => 'Nombre',
 			'telefono' => 'Teléfono',
 			'fecha_alta' => 'Fecha de Alta',
@@ -92,7 +86,7 @@ class Cliente extends CActiveRecord
 
 		$criteria=new CDbCriteria;
 
-		$criteria->compare('userid',$this->userid,true);
+		$criteria->compare('id',$this->id,true);
 		$criteria->compare('nombre',$this->nombre,true);
 		$criteria->compare('telefono',$this->telefono);
 		$criteria->compare('fecha_alta',$this->fecha_alta,true);
@@ -113,4 +107,21 @@ class Cliente extends CActiveRecord
 	{
 		return parent::model($className);
 	}
+
+    protected function beforeValidate()
+    {
+        if($this->isNewRecord)
+        {
+            //set the create date, last updated date and the user doing the creating
+            $this->fecha_alta=$this->fecha_mod=new CDbExpression('NOW()');
+            //$this->create_user_id=$this->update_user_id=Yii::app()->user->id;
+        }
+        else {
+            //not a new record, so just set the last updated time and last updated user id
+            $this->fecha_mod=new CDbExpression('NOW()');
+            //$this->update_user_id=Yii::app()->user->id;
+        }
+
+        return parent::beforeValidate();
+    }
 }

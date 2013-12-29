@@ -10,6 +10,8 @@ $this->menu=array(
 	array('label'=>'Update Vehiculo','url'=>array('update','id'=>$model->id)),
 	array('label'=>'Delete Vehiculo','url'=>'#','linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
 	array('label'=>'Manage Vehiculo','url'=>array('admin')),
+    array('label'=>'Comprar Vehiculo','url'=>array('compra/create','id'=>$model->id), 'visible'=>$model->disponible==1),
+
 );
 ?>
 
@@ -17,16 +19,30 @@ $this->menu=array(
 
 <?php $this->widget('bootstrap.widgets.TbDetailView',array(
 	'data'=>$model,
-	'attributes'=>array(
+    'type'=>'striped bordered condensed',
+    'attributes'=>array(
 		'id',
-		'fabricanteid',
-		'modeloid',
-		'motorid',
-		'transmision',
+		'fabricante.nombre',
+		'modelo.nombre',
+        'tipomotor.tipo',
+        'tipomotor.fuente',
+		'motor.cilindrada',
+        'motor.potencia',
+        'motor.consumo',
+        'motor.emisiones',
+        array(
+            'label'=>'Transmisión automática',
+            'type'=>'raw',
+            'value'=>CHtml::encode($model->getTransmisionAutomatica()),
+        ),
 		'color',
 		'fecha_fabricacion',
 		'fecha_alta',
 		'fecha_mod',
-		'disponible',
+        array(
+            'label'=>'Disponible',
+            'type'=>'raw',
+            'value'=>CHtml::encode($model->getDisponible()),
+        ),
 	),
 )); ?>

@@ -13,8 +13,6 @@
  *
  * The followings are the available model relations:
  * @property AuthItem[] $tblAuthItems
- * @property Clientes $clientes
- * @property Encargados $encargados
  */
 class Usuario extends CActiveRecord
 {
@@ -53,8 +51,6 @@ class Usuario extends CActiveRecord
 		// class name for the relations automatically generated below.
 		return array(
 			'tblAuthItems' => array(self::MANY_MANY, 'AuthItem', 'tbl_auth_assignment(userid, itemname)'),
-			'clientes' => array(self::HAS_ONE, 'Clientes', 'userid'),
-			'encargados' => array(self::HAS_ONE, 'Encargados', 'userid'),
 		);
 	}
 

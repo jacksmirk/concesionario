@@ -4,8 +4,8 @@
 	<?php echo CHtml::link(CHtml::encode($data->id),array('view','id'=>$data->id)); ?>
 	<br />
 
-	<b><?php echo CHtml::encode($data->getAttributeLabel('cuentaid')); ?>:</b>
-	<?php echo CHtml::encode($data->cuentaid); ?>
+	<b><?php echo CHtml::encode($data->getAttributeLabel('clienteid')); ?>:</b>
+	<?php echo CHtml::encode($data->clienteid); ?>
 	<br />
 
 	<b><?php echo CHtml::encode($data->getAttributeLabel('vehiculoid')); ?>:</b>
@@ -14,10 +14,6 @@
 
 	<b><?php echo CHtml::encode($data->getAttributeLabel('precio')); ?>:</b>
 	<?php echo CHtml::encode($data->precio); ?>
-	<br />
-
-	<b><?php echo CHtml::encode($data->getAttributeLabel('metodo_pago')); ?>:</b>
-	<?php echo CHtml::encode($data->metodo_pago); ?>
 	<br />
 
 	<b><?php echo CHtml::encode($data->getAttributeLabel('fecha_compra')); ?>:</b>
