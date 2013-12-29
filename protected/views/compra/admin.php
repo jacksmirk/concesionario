@@ -6,7 +6,8 @@ $this->breadcrumbs=array(
 
 $this->menu=array(
 	array('label'=>'List Compra','url'=>array('index')),
-	array('label'=>'Create Compra','url'=>array('create')),
+    array('label'=>'List Vehiculos','url'=>array('vehiculo/index')),
+
 );
 
 Yii::app()->clientScript->registerScript('search', "
@@ -43,8 +44,19 @@ or <b>=</b>) at the beginning of each of your search values to specify how the c
 	'filter'=>$model,
 	'columns'=>array(
 		'id',
-		'clienteid',
-		'vehiculoid',
+        array(
+            'name' => 'cliente_nombre',
+            'value' => '$data->cliente->nombre',
+        ),
+        'vehiculoid',
+        array(
+            'name' => 'fabricante_nombre',
+            'value' => '$data->fabricante->nombre',
+        ),
+        array(
+            'name' => 'modelo_nombre',
+            'value' => '$data->modelo->nombre',
+        ),
 		'precio',
 		'fecha_compra',
 		array(

@@ -5,9 +5,11 @@
 
 	<?php echo $form->textFieldRow($model,'id',array('class'=>'span5','maxlength'=>11)); ?>
 
-	<?php echo $form->textFieldRow($model,'clienteid',array('class'=>'span5','maxlength'=>11)); ?>
 
 	<?php echo $form->textFieldRow($model,'vehiculoid',array('class'=>'span5','maxlength'=>11)); ?>
+
+    <?php echo $form->textFieldRow($model,'cliente_nombre',array('class'=>'span5')); ?>
+
 
 	<?php echo $form->textFieldRow($model,'precio',array('class'=>'span5')); ?>
 

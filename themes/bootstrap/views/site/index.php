@@ -8,18 +8,56 @@ $this->pageTitle=Yii::app()->name;
     'heading'=>'Welcome to '.CHtml::encode(Yii::app()->name),
 )); ?>
 
-<p>Congratulations! You have successfully created your Yii application.</p>
-
+</br>
+</br>
+<div><?php $this->widget('bootstrap.widgets.TbButton', array(
+        'type'=>'primary',
+        'buttonType'=>'link',
+        'url'=>array('motor/index'),
+        'size'=>'large',
+        'label'=>'Motor',
+    )); ?>
+    &nbsp;
+<?php $this->widget('bootstrap.widgets.TbButton', array(
+        'type'=>'primary',
+        'size'=>'large',
+        'label'=>'Fabricante',
+        'buttonType'=>'link',
+        'url'=>array('fabricante/index'),
+    )); ?>
+    &nbsp;
+    <?php $this->widget('bootstrap.widgets.TbButton', array(
+        'type'=>'primary',
+        'size'=>'large',
+        'label'=>'Modelo',
+        'buttonType'=>'link',
+        'url'=>array('modelo/index'),
+    )); ?>
+    &nbsp;
+    <?php $this->widget('bootstrap.widgets.TbButton', array(
+        'type'=>'primary',
+        'size'=>'large',
+        'label'=>'Vehiculo',
+        'buttonType'=>'link',
+        'url'=>array('vehiculo/index'),
+    )); ?>
+    &nbsp;
+    <?php $this->widget('bootstrap.widgets.TbButton', array(
+        'type'=>'primary',
+        'size'=>'large',
+        'label'=>'Compra',
+        'buttonType'=>'link',
+        'url'=>array('compra/index'),
+    )); ?>
+    &nbsp;
+    <?php $this->widget('bootstrap.widgets.TbButton', array(
+        'type'=>'primary',
+        'size'=>'large',
+        'label'=>'Cliente',
+        'buttonType'=>'link',
+        'url'=>array('cliente/index'),
+    )); ?>
+</div>
 <?php $this->endWidget(); ?>
 
-<p>You may change the content of this page by modifying the following two files:</p>
 
-<ul>
-    <li>View file: <code><?php echo __FILE__; ?></code></li>
-    <li>Layout file: <code><?php echo $this->getLayoutFile('main'); ?></code></li>
-</ul>
-
-<p>For more details on how to further develop this application, please read
-    the <a href="http://www.yiiframework.com/doc/">documentation</a>.
-    Feel free to ask in the <a href="http://www.yiiframework.com/forum/">forum</a>,
-    should you have any questions.</p>

@@ -16,6 +16,10 @@
  */
 class Compra extends CActiveRecord
 {
+    public $cliente_nombre;
+    public $fabricante_nombre;
+    public $modelo_nombre;
+
 	/**
 	 * @return string the associated database table name
 	 */
@@ -37,7 +41,7 @@ class Compra extends CActiveRecord
 			array('clienteid, vehiculoid', 'length', 'max'=>11),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, clienteid, vehiculoid, precio, fecha_compra', 'safe', 'on'=>'search'),
+			array('id, clienteid, vehiculoid, modelo_nombre, fabricante_nombre, cliente_nombre, precio, fecha_compra', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -49,9 +53,12 @@ class Compra extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'cliente' => array(self::BELONGS_TO, 'Clientes', 'clienteid'),
-			'vehiculo' => array(self::BELONGS_TO, 'Vehiculos', 'vehiculoid'),
-		);
+			'cliente' => array(self::BELONGS_TO, 'Cliente', 'clienteid'),
+			'vehiculo' => array(self::BELONGS_TO, 'Vehiculo', 'vehiculoid'),
+            'modelo' => array('BelongsToThrough', 'Modelo', array('modeloid'=>'id'), 'through' => 'vehiculo'),
+            'fabricante' => array('BelongsToThrough', 'Fabricante', array('fabricanteid'=>'id'), 'through' => 'modelo'),
+
+        );
 	}
 
 	/**
@@ -62,6 +69,9 @@ class Compra extends CActiveRecord
 		return array(
 			'id' => 'ID',
 			'clienteid' => 'Id de Cliente',
+            'cliente_nombre' => 'Cliente',
+            'fabricante_nombre' => 'Fabricante',
+            'modelo_nombre' => 'Modelo',
 			'vehiculoid' => 'Id de Vehículo',
 			'precio' => 'Precio',
 			'fecha_compra' => 'Fecha de Compra',
@@ -83,17 +93,45 @@ class Compra extends CActiveRecord
 	public function search()
 	{
 		// @todo Please modify the following code to remove attributes that should not be searched.
-
-		$criteria=new CDbCriteria;
+        $criteria = new CDbCriteria();
+        $criteria->with=array(
+            'modelo',
+            'fabricante',
+            'cliente',
+        );
 
 		$criteria->compare('id',$this->id,true);
 		$criteria->compare('clienteid',$this->clienteid,true);
-		$criteria->compare('vehiculoid',$this->vehiculoid,true);
+        $criteria->compare('cliente.nombre',$this->cliente_nombre,true);
+        $criteria->compare('fabricante.nombre',$this->fabricante_nombre,true);
+        $criteria->compare('modelo.nombre',$this->modelo_nombre,true);
+        $criteria->compare('vehiculoid',$this->vehiculoid,true);
 		$criteria->compare('precio',$this->precio);
 		$criteria->compare('fecha_compra',$this->fecha_compra,true);
 
+        $sort=new CSort;
+        $sort->attributes=array(
+            // For each relational attribute, create a 'virtual attribute' using the public variable name
+            'cliente_nombre' => array(
+                'asc' => 'cliente.nombre',
+                'desc' => 'cliente.nombre DESC',
+                'label' => 'Cliente',
+            ),
+            'fabricante_nombre' => array(
+                'asc' => 'fabricante.nombre',
+                'desc' => 'fabricante.nombre DESC',
+                'label' => 'Fabricante',
+            ),
+            'modelo_nombre' => array(
+                'asc' => 'modelo.nombre',
+                'desc' => 'modelo.nombre DESC',
+                'label' => 'Modelo',
+            ),
+            '*',
+        );
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
+            'sort'=>$sort,
 		));
 	}
 

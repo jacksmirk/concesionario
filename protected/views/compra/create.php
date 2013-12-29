@@ -7,6 +7,8 @@ $this->breadcrumbs=array(
 $this->menu=array(
 	array('label'=>'List Compra','url'=>array('index')),
 	array('label'=>'Manage Compra','url'=>array('admin')),
+    array('label'=>'List Vehiculos','url'=>array('vehiculo/index')),
+
 );
 ?>
 

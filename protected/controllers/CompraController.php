@@ -27,7 +27,7 @@ class CompraController extends Controller
 	{
 		return array(
 			array('allow',  // allow all users to perform 'index' and 'view' actions
-				'actions'=>array('index','view'),
+				'actions'=>array('index','view','autocompleteClientes'),
 				'users'=>array('*'),
 			),
 			array('allow', // allow authenticated user to perform 'create' and 'update' actions
@@ -59,11 +59,11 @@ class CompraController extends Controller
 	 * Creates a new model.
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 */
-	public function actionCreate()
+	public function actionCreate($id)
 	{
 		$model=new Compra;
-
-		// Uncomment the following line if AJAX validation is needed
+        $model->vehiculoid=$id;
+        // Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
 		if(isset($_POST['Compra']))
@@ -93,8 +93,9 @@ class CompraController extends Controller
 		if(isset($_POST['Compra']))
 		{
 			$model->attributes=$_POST['Compra'];
-			if($model->save())
-				$this->redirect(array('view','id'=>$model->id));
+			if($model->save()){
+				    $this->redirect(array('view','id'=>$model->id));
+            }
 		}
 
 		$this->render('update',array(
@@ -127,7 +128,37 @@ class CompraController extends Controller
 	 */
 	public function actionIndex()
 	{
-		$dataProvider=new CActiveDataProvider('Compra');
+        $criteria = new CDbCriteria();
+        $criteria->with=array(
+            'modelo',
+            'fabricante',
+            'cliente',
+        );
+       $sort=new CSort;
+        $sort->attributes=array(
+            // For each relational attribute, create a 'virtual attribute' using the public variable name
+            'cliente_nombre' => array(
+                'asc' => 'cliente.nombre',
+                'desc' => 'cliente.nombre DESC',
+                'label' => 'Cliente',
+            ),
+            'fabricante_nombre' => array(
+                'asc' => 'fabricante.nombre',
+                'desc' => 'fabricante.nombre DESC',
+                'label' => 'Fabricante',
+            ),
+            'modelo_nombre' => array(
+                'asc' => 'modelo.nombre',
+                'desc' => 'modelo.nombre DESC',
+                'label' => 'Modelo',
+            ),
+            '*',
+        );
+
+		$dataProvider=new CActiveDataProvider('Compra', array(
+            'criteria'=>$criteria,
+            'sort'=>$sort,
+        ));
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
 		));
@@ -173,4 +204,26 @@ class CompraController extends Controller
 			Yii::app()->end();
 		}
 	}
+
+    public function actionAutocompleteClientes(){
+        if (isset($_GET['term'])) {
+
+            $criteria=new CDbCriteria;
+            $criteria->alias = "cliente";
+            $criteria->condition = "cliente.nombre like '%".$_GET['term']."%'";
+            $criteria->order='cliente.nombre';
+            $criteria->limit = 30;
+
+            $clientes=Cliente::model()->findAll($criteria);
+            $arr = array();
+            foreach($clientes as $cliente) {
+                $arr[] = array(
+                    'label'=>$cliente->nombre,  // label for dropdown list
+                    'value'=>$cliente->nombre,  // value for input field
+                    'id'=>$cliente->id,            // return value from autocomplete
+                );
+            }
+            echo CJSON::encode($arr);
+        }
+    }
 }

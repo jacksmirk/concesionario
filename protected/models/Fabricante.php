@@ -51,8 +51,8 @@ class Fabricante extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
-			'modeloses' => array(self::HAS_MANY, 'Modelos', 'fabricanteid'),
-			'vehiculoses' => array(self::HAS_MANY, 'Vehiculos', 'fabricanteid'),
+			'modelos' => array(self::HAS_MANY, 'Modelo', 'fabricanteid'),
+			'vehiculos' => array(self::HAS_MANY, 'Vehiculo', 'fabricanteid'),
 		);
 	}
 
