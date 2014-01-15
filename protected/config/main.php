@@ -19,6 +19,8 @@ return array(
 	'import'=>array(
 		'application.models.*',
 		'application.components.*',
+        'application.modules.poll.models.*',
+        'application.modules.poll.components.*',
     ),
 
 	'modules'=>array(
@@ -32,6 +34,16 @@ return array(
                 'bootstrap.gii',
 			),
 		),
+        'poll' => array(
+            // Force users to vote before seeing results
+            'forceVote' => TRUE,
+            // Restrict anonymous votes by IP address,
+            // otherwise it's tied only to user_id
+            'ipRestrict' => TRUE,
+            // Allow guests to cancel their votes
+            // if ipRestrict is enabled
+            'allowGuestCancel' => FALSE,
+        ),
 	),
 
 	// application components
@@ -67,7 +79,7 @@ return array(
 			'connectionString' => 'mysql:host=localhost;port=8889;dbname=Concesionario',
 			'emulatePrepare' => true,
 			'username' => 'root',
-			'password' => 'c387TXj86',
+			'password' => 'root',
 			'charset' => 'utf8',
 		),
 		'errorHandler'=>array(
