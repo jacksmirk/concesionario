@@ -23,7 +23,12 @@ $this->menu=array(
 	'attributes'=>array(
 		//'id',
 		array('label'=>'Quick Poll',
-            'name'=>'quickpoll.name',
+            //'name'=>'quickpoll.name',
+            'type'=>'html',
+            'value'=>CHtml::link(
+                        CHtml::encode($model->quickpoll->name),
+                        array('quickpolls/view','id'=>$model->quickpoll_id)
+                ),
         ),
 		//'page_number',
         array('name'=>'Preguntas',

@@ -10,7 +10,7 @@ $this->menu=array(
 	array('label'=>'Update QpQuestions','url'=>array('update','id'=>$model->id)),
 	array('label'=>'Delete QpQuestions','url'=>'#','linkOptions'=>array('submit'=>array('delete','id'=>$model->id),'confirm'=>'Are you sure you want to delete this item?')),
 	array('label'=>'Manage QpQuestions','url'=>array('admin')),
-    array('label'=>'Añadir opción de respuesta', 'url'=>array('qpChoices/create'), 'visible'=>$model->answer_type_id<=3),
+    array('label'=>'Añadir opción de respuesta', 'url'=>array('qpChoices/create','question_id'=>$model->id), 'visible'=>$model->answer_type_id<=3),
 );
 ?>
 
@@ -24,5 +24,9 @@ $this->menu=array(
 		'answer_type_name',
 		'label',
 		//'orden',
+        array('name'=>'Opciones de respuesta',
+            'type'=>'html',
+            'value'=>$model->relatedChoices,
+        ),
 	),
 )); ?>

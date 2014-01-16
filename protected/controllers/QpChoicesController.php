@@ -59,7 +59,7 @@ class QpChoicesController extends Controller
 	 * Creates a new model.
 	 * If creation is successful, the browser will be redirected to the 'view' page.
 	 */
-	public function actionCreate()
+	public function actionCreate($question_id)
 	{
 		$model=new QpChoices;
 
@@ -69,9 +69,32 @@ class QpChoicesController extends Controller
 		if(isset($_POST['QpChoices']))
 		{
 			$model->attributes=$_POST['QpChoices'];
+
+            //Check and change Order
+            $sameOrder=QpChoices::model()->findByAttributes(array('order_number'=>$model->order_number));
+            if($sameOrder!=null){
+                $this->changeOrderFrom($model->order);
+            }
+            if(!is_numeric($model->destination_page_id))
+                $model->destination_page_id=null;
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
+        if($question_id!=null){
+            $question=QpQuestions::model()->findByPk($question_id);
+            //$model->page_id=$page->id;
+            //$model->page_number=$page->page_number;
+            $pages=QpPages::model()->findAllByAttributes(array('quickpoll_id'=>$question->page->quickpoll_id));
+            $model->pages_array=CHtml::listData($pages,'id','page_number');
+
+            $count_choices=$model->countByAttributes(array('question_id'=>$question_id));
+            for($i=0; $i<=$count_choices;$i++){
+                $model->order_array[$i]=$i + 1;
+            }
+            $model->order_number=$count_choices;
+        }
+        if($question_id!=null)
+            $model->question_id=$question_id;
 
 		$this->render('create',array(
 			'model'=>$model,
@@ -86,6 +109,7 @@ class QpChoicesController extends Controller
 	public function actionUpdate($id)
 	{
 		$model=$this->loadModel($id);
+        $currentOrder=$model->order_number;
 
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
@@ -93,9 +117,17 @@ class QpChoicesController extends Controller
 		if(isset($_POST['QpChoices']))
 		{
 			$model->attributes=$_POST['QpChoices'];
+            if($currentOrder!=$model->order_number)
+                $this->changeOrderOnUpdate($currentOrder,$model->order_number);
+
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
+
+        $count_choices=$model->countByAttributes(array('question_id'=>$model->question_id));
+        for($i=0; $i<$count_choices;$i++){
+            $model->order_array[$i]=$i + 1;
+        }
 
 		$this->render('update',array(
 			'model'=>$model,
@@ -125,12 +157,22 @@ class QpChoicesController extends Controller
 	/**
 	 * Lists all models.
 	 */
-	public function actionIndex()
+	public function actionIndex($question_id)
 	{
-		$dataProvider=new CActiveDataProvider('QpChoices');
-		$this->render('index',array(
+        //$question=QpPages::model()->findByPk($question_id);
+
+        $criteria = new CDbCriteria();
+        $criteria->condition = 'question_id=:question_id';
+        $criteria->params = array(':question_id'=>$question_id);
+
+        $dataProvider=new CActiveDataProvider('QpChoices', array(
+            'criteria'=>$criteria,
+            'sort'=>array('defaultOrder'=>'order_number',),
+        ));
+
+        $this->render('index',array(
 			'dataProvider'=>$dataProvider,
-		));
+        ));
 	}
 
 	/**
@@ -158,7 +200,9 @@ class QpChoicesController extends Controller
 		$model=QpChoices::model()->findByPk($id);
 		if($model===null)
 			throw new CHttpException(404,'The requested page does not exist.');
-		return $model;
+        $model->orden=$model->order_number+1;
+
+        return $model;
 	}
 
 	/**
@@ -173,4 +217,41 @@ class QpChoicesController extends Controller
 			Yii::app()->end();
 		}
 	}
+
+    public function changeOrderOnCreate($newOrder){
+        $correct=true;
+        $choices=QpChoices::model()->findAll();
+        foreach($choices as $choice){
+            if($choice->order_number>=$newOrder){
+                $choice->order_number++;
+                if(!$choice->save())
+                    !$correct;
+            }
+        }
+        return $correct;
+    }
+
+    public function changeOrderOnUpdate($currentOrder, $newOrder){
+        $correct=true;
+        if($currentOrder>$newOrder){
+            $choices=QpChoices::model()->findAll();
+            foreach($choices as $choice){
+                if($choice->order_number>=$newOrder and $choice->order_number<$currentOrder){
+                    $choice->order_number++;
+                    if(!$choice->save())
+                        !$correct;
+                }
+            }
+        }elseif($currentOrder<$newOrder){
+            $choices=QpChoices::model()->findAll();
+            foreach($choices as $choice){
+                if($choice->order_number<=$newOrder and $choice->order_number>$currentOrder){
+                    $question->order_number--;
+                    if(!$choice->save())
+                        !$correct;
+                }
+            }
+        }
+        return $correct;
+    }
 }

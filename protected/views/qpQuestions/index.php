@@ -1,15 +1,15 @@
 <?php
 $this->breadcrumbs=array(
-	'Qp Questions',
+	'Preguntas',
 );
 
 $this->menu=array(
-	array('label'=>'Create QpQuestions','url'=>array('create')),
-	array('label'=>'Manage QpQuestions','url'=>array('admin')),
+	array('label'=>'Añadir Pregunta','url'=>array('create','page_id'=>$page_id)),
+	array('label'=>'Administrar Preguntas','url'=>array('admin','page_id'=>$page_id)),
 );
 ?>
 
-<h1>Qp Questions</h1>
+<h1>Preguntas de la página <?php echo CHtml::link(CHtml::encode($page_number),array('qpPages/view','id'=>$page_id));?></h1>
 
 <?php $this->widget('bootstrap.widgets.TbListView',array(
 	'dataProvider'=>$dataProvider,

@@ -19,10 +19,10 @@ $this->menu=array(
 	'data'=>$model,
 	'attributes'=>array(
 		'id',
-		'question_id',
+		//'question_id',
 		'destination_page_id',
 		'label',
 		'votes',
-		'order',
+		'order_number',
 	),
 )); ?>

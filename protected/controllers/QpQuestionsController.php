@@ -71,6 +71,12 @@ class QpQuestionsController extends Controller
 		if(isset($_POST['QpQuestions']))
 		{
 			$model->attributes=$_POST['QpQuestions'];
+
+            //Check and change Order
+            $sameOrder=QpQuestions::model()->findByAttributes(array('order_number'=>$model->order_number));
+            if($sameOrder!=null){
+                $this->changeOrderFrom($model->order);
+            }
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
@@ -82,7 +88,7 @@ class QpQuestionsController extends Controller
             for($i=0; $i<=$count_questions;$i++){
                 $model->order_array[$i]=$i + 1;
             }
-            $model->order=$count_questions;
+            $model->order_number=$count_questions;
         }
 		$this->render('create',array(
 			'model'=>$model,
@@ -97,16 +103,25 @@ class QpQuestionsController extends Controller
 	public function actionUpdate($id)
 	{
 		$model=$this->loadModel($id);
-
+        $currentOrder=$model->order_number;
 		// Uncomment the following line if AJAX validation is needed
 		// $this->performAjaxValidation($model);
 
 		if(isset($_POST['QpQuestions']))
 		{
 			$model->attributes=$_POST['QpQuestions'];
+            //Order change
+            if($currentOrder!=$model->order_number)
+                $this->changeOrderOnUpdate($currentOrder,$model->order_number);
+
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));
 		}
+
+        $count_questions=$model->countByAttributes(array('page_id'=>$model->page_id));
+        for($i=0; $i<$count_questions;$i++){
+            $model->order_array[$i]=$i + 1;
+        }
 
 		$this->render('update',array(
 			'model'=>$model,
@@ -136,11 +151,24 @@ class QpQuestionsController extends Controller
 	/**
 	 * Lists all models.
 	 */
-	public function actionIndex()
+	public function actionIndex($page_id)
 	{
-		$dataProvider=new CActiveDataProvider('QpQuestions');
+        $page=QpPages::model()->findByPk($page_id);
+
+        $criteria = new CDbCriteria();
+        $criteria->condition = 'page_id=:page_id';
+        $criteria->params = array(':page_id'=>$page_id);
+
+        $dataProvider=new CActiveDataProvider('QpQuestions', array(
+            'criteria'=>$criteria,
+            'sort'=>array('defaultOrder'=>'order_number',),
+        ));
+
+
 		$this->render('index',array(
 			'dataProvider'=>$dataProvider,
+            'page_id'=>$page_id,
+            'page_number'=>$page->page_number,
 		));
 	}
 
@@ -178,7 +206,7 @@ class QpQuestionsController extends Controller
         if($page!=null){
             $model->page_number=$page->page_number;
         }
-        $model->orden=$model->order+1;
+        $model->orden=$model->order_number+1;
 		return $model;
 	}
 
@@ -194,4 +222,41 @@ class QpQuestionsController extends Controller
 			Yii::app()->end();
 		}
 	}
+
+    public function changeOrderOnCreate($newOrder){
+        $correct=true;
+        $questions=QpQuestions::model()->findAll();
+        foreach($questions as $question){
+            if($question->order_number>=$newOrder){
+                $question->order_number++;
+                if(!$question->save())
+                    !$correct;
+            }
+        }
+        return $correct;
+    }
+
+    public function changeOrderOnUpdate($currentOrder, $newOrder){
+        $correct=true;
+        if($currentOrder>$newOrder){
+            $questions=QpQuestions::model()->findAll();
+            foreach($questions as $question){
+                if($question->order_number>=$newOrder and $question->order_number<$currentOrder){
+                    $question->order_number++;
+                    if(!$question->save())
+                        !$correct;
+                }
+            }
+        }elseif($currentOrder<$newOrder){
+            $questions=QpQuestions::model()->findAll();
+            foreach($questions as $question){
+                if($question->order_number<=$newOrder and $question->order_number>$currentOrder){
+                    $question->order_number--;
+                    if(!$question->save())
+                        !$correct;
+                }
+            }
+        }
+        return $correct;
+    }
 }

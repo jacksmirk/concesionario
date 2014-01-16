@@ -11,7 +11,7 @@
 
 	<?php echo $form->textFieldRow($model,'label',array('class'=>'span5','maxlength'=>45)); ?>
 
-	<?php echo $form->textFieldRow($model,'order',array('class'=>'span5')); ?>
+	<?php echo $form->textFieldRow($model,'order_number',array('class'=>'span5')); ?>
 
 	<div class="form-actions">
 		<?php $this->widget('bootstrap.widgets.TbButton', array(

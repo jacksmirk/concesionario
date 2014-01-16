@@ -20,8 +20,8 @@
 	<?php echo CHtml::encode($data->votes); ?>
 	<br />
 
-	<b><?php echo CHtml::encode($data->getAttributeLabel('order')); ?>:</b>
-	<?php echo CHtml::encode($data->order); ?>
+	<b><?php echo CHtml::encode($data->getAttributeLabel('order_number')); ?>:</b>
+	<?php echo CHtml::encode($data->order_number); ?>
 	<br />
 
 

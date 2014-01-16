@@ -9,7 +9,7 @@
  * @property string $destination_page_id
  * @property string $label
  * @property integer $votes
- * @property integer $order
+ * @property integer $order_number
  *
  * The followings are the available model relations:
  * @property QpPages $destinationPage
@@ -17,7 +17,11 @@
  */
 class QpChoices extends CActiveRecord
 {
-	/**
+    public $pages_array;
+    public $order_array;
+    public $orden;
+
+    /**
 	 * @return string the associated database table name
 	 */
 	public function tableName()
@@ -34,12 +38,12 @@ class QpChoices extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('question_id', 'required'),
-			array('votes, order', 'numerical', 'integerOnly'=>true),
+			array('votes, order_number', 'numerical', 'integerOnly'=>true),
 			array('question_id, destination_page_id', 'length', 'max'=>11),
 			array('label', 'length', 'max'=>255),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, question_id, destination_page_id, label, votes, order', 'safe', 'on'=>'search'),
+			array('id, question_id, destination_page_id, label, votes, order_number', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -63,11 +67,11 @@ class QpChoices extends CActiveRecord
 	{
 		return array(
 			'id' => 'ID',
-			'question_id' => 'Question',
-			'destination_page_id' => 'Destination Page',
-			'label' => 'Label',
-			'votes' => 'Votes',
-			'order' => 'Order',
+			'question_id' => 'Pregunta',
+			'destination_page_id' => 'Página de destino',
+			'label' => 'Texto',
+			'votes' => 'Votos',
+			'order_number' => 'Orden',
 		);
 	}
 
@@ -94,7 +98,7 @@ class QpChoices extends CActiveRecord
 		$criteria->compare('destination_page_id',$this->destination_page_id,true);
 		$criteria->compare('label',$this->label,true);
 		$criteria->compare('votes',$this->votes);
-		$criteria->compare('order',$this->order);
+		$criteria->compare('order_number',$this->order_number);
 
 		return new CActiveDataProvider($this, array(
 			'criteria'=>$criteria,
@@ -111,4 +115,8 @@ class QpChoices extends CActiveRecord
 	{
 		return parent::model($className);
 	}
+
+    public function getOrden(){
+        return $this->order_number+1;
+    }
 }

@@ -46,7 +46,9 @@ or <b>=</b>) at the beginning of each of your search values to specify how the c
 		'page_id',
 		'answer_type_id',
 		'label',
-		'order',
+		array('name'=>'order_number',
+              'value'=>'$data->getOrden()',
+        ),
 		array(
 			'class'=>'bootstrap.widgets.TbButtonColumn',
 		),

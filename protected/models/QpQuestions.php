@@ -8,7 +8,7 @@
  * @property string $page_id
  * @property string $answer_type_id
  * @property string $label
- * @property integer $order
+ * @property integer $order_number
  * @property integer $required
  *
  * The followings are the available model relations:
@@ -41,12 +41,12 @@ class QpQuestions extends CActiveRecord
 		// will receive user inputs.
 		return array(
 			array('page_id, answer_type_id', 'required'),
-			array('order, required', 'numerical', 'integerOnly'=>true),
+			array('order_number, required', 'numerical', 'integerOnly'=>true),
 			array('page_id, answer_type_id', 'length', 'max'=>11),
 			array('label', 'length', 'max'=>255),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, page_id, answer_type_id, label, order, page_number, required', 'safe', 'on'=>'search'),
+			array('id, page_id, answer_type_id, label, order_number, orden, page_number, required', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -77,7 +77,8 @@ class QpQuestions extends CActiveRecord
 			'answer_type_id' => 'Tipo de Respuesta',
             'answer_type_name' => 'Tipo de Respuesta',
 			'label' => 'Título',
-			'order' => 'Orden',
+			'order_number' => 'Orden',
+            'orden' => 'Orden',
             'required' => 'Obligatoria',
 		);
 	}
@@ -104,7 +105,8 @@ class QpQuestions extends CActiveRecord
 		$criteria->compare('page_id',$this->page_id,true);
 		$criteria->compare('answer_type_id',$this->answer_type_id,true);
 		$criteria->compare('label',$this->label,true);
-		$criteria->compare('order',$this->order);
+		$criteria->compare('order_number',$this->order_number);
+       // $criteria->compare('orden',$this->getOrden());
         $criteria->compare('required',$this->required);
 
 		return new CActiveDataProvider($this, array(
@@ -127,5 +129,21 @@ class QpQuestions extends CActiveRecord
         $tipos = QpAnswerType::model()->findAll();
         $listaTipos = CHtml::listData($tipos,'id','name');
         return $listaTipos;
+    }
+
+    public function getOrden(){
+        return $this->order_number+1;
+    }
+
+    public function getRelatedChoices ()
+    {
+        $out=CHtml::listData($this->qpChoices,'id','label');
+        $related = '<ul>';
+        foreach($out as $key=>$value) {
+            $related .= sprintf('<li>%s</li>', CHtml::link($value, array('qpChoices/view', 'id' => $key)));
+
+        }
+        $related .= '</ul>';
+        return $related;
     }
 }

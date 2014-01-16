@@ -20,7 +20,7 @@
 
 	<?php echo $form->textFieldRow($model,'label',array('class'=>'span5','maxlength'=>255)); ?>
 
-    <?php echo $form->dropDownListRow($model, 'order', $model->order_array); ?>
+    <?php echo $form->dropDownListRow($model, 'order_number', $model->order_array); ?>
 
 <?php echo $form->dropDownListRow($model, 'required', array('0'=>'No', '1'=>'Sí',)); ?>
 
