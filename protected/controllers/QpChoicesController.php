@@ -73,7 +73,7 @@ class QpChoicesController extends Controller
             //Check and change Order
             $sameOrder=QpChoices::model()->findByAttributes(array('order_number'=>$model->order_number));
             if($sameOrder!=null){
-                $this->changeOrderFrom($model->order);
+                $this->changeOrderOnCreate($model->order_number);
             }
             if(!is_numeric($model->destination_page_id))
                 $model->destination_page_id=null;
@@ -159,7 +159,7 @@ class QpChoicesController extends Controller
 	 */
 	public function actionIndex($question_id)
 	{
-        //$question=QpPages::model()->findByPk($question_id);
+        $question=QpQuestions::model()->findByPk($question_id);
 
         $criteria = new CDbCriteria();
         $criteria->condition = 'question_id=:question_id';
@@ -172,6 +172,7 @@ class QpChoicesController extends Controller
 
         $this->render('index',array(
 			'dataProvider'=>$dataProvider,
+            'question'=>$question,
         ));
 	}
 
@@ -246,7 +247,7 @@ class QpChoicesController extends Controller
             $choices=QpChoices::model()->findAll();
             foreach($choices as $choice){
                 if($choice->order_number<=$newOrder and $choice->order_number>$currentOrder){
-                    $question->order_number--;
+                    $choice->order_number--;
                     if(!$choice->save())
                         !$correct;
                 }

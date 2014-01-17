@@ -75,7 +75,7 @@ class QpQuestionsController extends Controller
             //Check and change Order
             $sameOrder=QpQuestions::model()->findByAttributes(array('order_number'=>$model->order_number));
             if($sameOrder!=null){
-                $this->changeOrderFrom($model->order);
+                $this->changeOrderOnCreate($model->order_number);
             }
 			if($model->save())
 				$this->redirect(array('view','id'=>$model->id));

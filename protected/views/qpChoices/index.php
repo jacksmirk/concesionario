@@ -9,7 +9,9 @@ $this->menu=array(
 );
 ?>
 
-<h1>Qp Choices</h1>
+<h3>Opciones de respuesta para la pregunta:</h3>
+<h1><?php echo CHtml::encode($question->order_number+1 . '. ' . $question->label);?></h1>
+
 
 <?php $this->widget('bootstrap.widgets.TbListView',array(
 	'dataProvider'=>$dataProvider,
