@@ -1,0 +1,199 @@
+CREATE TABLE poll
+(
+    id INT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    title VARCHAR(255) NOT NULL,
+    description LONGTEXT,
+    status TINYINT DEFAULT 1 NOT NULL
+);
+CREATE TABLE poll_choice
+(
+    id INT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    poll_id INT UNSIGNED NOT NULL,
+    label VARCHAR(255) DEFAULT '' NOT NULL,
+    votes INT UNSIGNED DEFAULT 0 NOT NULL,
+    weight INT DEFAULT 0 NOT NULL,
+    FOREIGN KEY ( poll_id ) REFERENCES poll ( id ) ON DELETE CASCADE ON UPDATE CASCADE
+);
+CREATE TABLE poll_vote
+(
+    id INT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    choice_id INT UNSIGNED NOT NULL,
+    poll_id INT UNSIGNED NOT NULL,
+    user_id INT UNSIGNED DEFAULT 0 NOT NULL,
+    ip_address VARCHAR(16) DEFAULT '' NOT NULL,
+    timestamp INT UNSIGNED DEFAULT 0 NOT NULL,
+    FOREIGN KEY ( user_id ) REFERENCES tbl_usuarios ( id ) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY ( choice_id ) REFERENCES poll_choice ( id ) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY ( poll_id ) REFERENCES poll ( id ) ON DELETE CASCADE ON UPDATE CASCADE
+);
+CREATE TABLE tbl_auth_assignment
+(
+    itemname VARCHAR(64) DEFAULT '' NOT NULL,
+    userid INT UNSIGNED NOT NULL,
+    bizrule LONGTEXT,
+    data LONGTEXT,
+    PRIMARY KEY ( itemname, userid ),
+    FOREIGN KEY ( itemname ) REFERENCES tbl_auth_item ( name ) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY ( userid ) REFERENCES tbl_usuarios ( id ) ON DELETE CASCADE ON UPDATE CASCADE
+);
+CREATE TABLE tbl_auth_item
+(
+    name VARCHAR(64) PRIMARY KEY NOT NULL,
+    type INT NOT NULL,
+    description LONGTEXT,
+    bizrule LONGTEXT,
+    data LONGTEXT
+);
+CREATE TABLE tbl_auth_item_child
+(
+    parent VARCHAR(64) NOT NULL,
+    child VARCHAR(64) NOT NULL,
+    PRIMARY KEY ( parent, child ),
+    FOREIGN KEY ( child ) REFERENCES tbl_auth_item ( name ) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY ( parent ) REFERENCES tbl_auth_item ( name ) ON DELETE CASCADE ON UPDATE CASCADE
+);
+CREATE TABLE tbl_clientes
+(
+    id INT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    nombre VARCHAR(45),
+    telefono INT,
+    fecha_alta DATETIME NOT NULL,
+    fecha_mod DATETIME
+);
+CREATE TABLE tbl_compras
+(
+    id INT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    clienteid INT UNSIGNED NOT NULL,
+    vehiculoid INT UNSIGNED NOT NULL,
+    precio INT,
+    fecha_compra DATETIME NOT NULL,
+    FOREIGN KEY ( clienteid ) REFERENCES tbl_clientes ( id ) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY ( vehiculoid ) REFERENCES tbl_vehiculos ( id ) ON DELETE CASCADE ON UPDATE CASCADE
+);
+CREATE TABLE tbl_fabricantes
+(
+    id INT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    nombre VARCHAR(45),
+    telefono INT,
+    email VARCHAR(45),
+    fecha_alta DATETIME NOT NULL,
+    fecha_mod DATETIME
+);
+CREATE TABLE tbl_migration
+(
+    version VARCHAR(255) PRIMARY KEY NOT NULL,
+    apply_time INT
+);
+CREATE TABLE tbl_modelos
+(
+    id INT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    fabricanteid INT UNSIGNED NOT NULL,
+    nombre VARCHAR(45) DEFAULT '' NOT NULL,
+    fecha_alta DATETIME NOT NULL,
+    fecha_mod DATETIME,
+    FOREIGN KEY ( fabricanteid ) REFERENCES tbl_fabricantes ( id ) ON DELETE CASCADE ON UPDATE CASCADE
+);
+CREATE TABLE tbl_motores
+(
+    id INT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    tipomotorid INT UNSIGNED NOT NULL,
+    cilindrada INT DEFAULT 0,
+    potencia INT DEFAULT 0,
+    consumo INT DEFAULT 0,
+    emisiones INT DEFAULT 0,
+    fecha_alta DATETIME NOT NULL,
+    fecha_mod DATETIME,
+    FOREIGN KEY ( tipomotorid ) REFERENCES tbl_tipos_motores ( id ) ON DELETE CASCADE ON UPDATE CASCADE
+);
+CREATE TABLE tbl_qp_answer_type
+(
+    id INT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    name VARCHAR(45),
+    description VARCHAR(255)
+);
+CREATE TABLE tbl_qp_choices
+(
+    id INT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    question_id INT UNSIGNED NOT NULL,
+    destination_page_id INT UNSIGNED,
+    label VARCHAR(255),
+    votes INT,
+    order_number TINYINT,
+    FOREIGN KEY ( destination_page_id ) REFERENCES tbl_qp_pages ( id ) ON DELETE SET NULL ON UPDATE CASCADE,
+    FOREIGN KEY ( question_id ) REFERENCES tbl_qp_questions ( id ) ON DELETE CASCADE ON UPDATE CASCADE
+);
+CREATE TABLE tbl_qp_opinions
+(
+    id INT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    question_id INT UNSIGNED NOT NULL,
+    content LONGTEXT NOT NULL,
+    FOREIGN KEY ( question_id ) REFERENCES tbl_qp_questions ( id ) ON DELETE CASCADE ON UPDATE CASCADE
+);
+CREATE TABLE tbl_qp_pages
+(
+    id INT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    quickpoll_id INT UNSIGNED NOT NULL,
+    page_number INT,
+    FOREIGN KEY ( quickpoll_id ) REFERENCES tbl_quickpolls ( id ) ON DELETE CASCADE ON UPDATE CASCADE
+);
+CREATE TABLE tbl_qp_questions
+(
+    id INT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    page_id INT UNSIGNED NOT NULL,
+    answer_type_id INT UNSIGNED NOT NULL,
+    label VARCHAR(255),
+    order_number TINYINT,
+    required TINYINT DEFAULT 0 NOT NULL,
+    FOREIGN KEY ( answer_type_id ) REFERENCES tbl_qp_answer_type ( id ) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY ( page_id ) REFERENCES tbl_qp_pages ( id ) ON DELETE CASCADE ON UPDATE CASCADE
+);
+CREATE TABLE tbl_qp_user
+(
+    quickpoll_id INT UNSIGNED PRIMARY KEY NOT NULL,
+    user_id INT UNSIGNED,
+    FOREIGN KEY ( user_id ) REFERENCES tbl_usuarios ( id ) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY ( quickpoll_id ) REFERENCES tbl_quickpolls ( id ) ON DELETE CASCADE ON UPDATE CASCADE
+);
+CREATE TABLE tbl_quickpolls
+(
+    id INT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    name VARCHAR(45),
+    description VARCHAR(45),
+    status TINYINT DEFAULT 0
+);
+CREATE TABLE tbl_tipos_motores
+(
+    id INT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    tipo VARCHAR(45),
+    fuente VARCHAR(45)
+);
+CREATE TABLE tbl_usuarios
+(
+    id INT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    username VARCHAR(45) DEFAULT '' NOT NULL,
+    password VARCHAR(255) DEFAULT '' NOT NULL,
+    email VARCHAR(45) DEFAULT '' NOT NULL,
+    fecha_alta DATETIME NOT NULL,
+    fecha_mod DATETIME
+);
+CREATE TABLE tbl_vehiculos
+(
+    id INT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    fabricanteid INT UNSIGNED NOT NULL,
+    modeloid INT UNSIGNED NOT NULL,
+    motorid INT UNSIGNED NOT NULL,
+    transmision VARCHAR(45),
+    color VARCHAR(45),
+    fecha_fabricacion DATETIME,
+    fecha_alta DATETIME NOT NULL,
+    fecha_mod DATETIME,
+    disponible TINYINT DEFAULT 1,
+    FOREIGN KEY ( fabricanteid ) REFERENCES tbl_fabricantes ( id ) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY ( modeloid ) REFERENCES tbl_modelos ( id ) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY ( motorid ) REFERENCES tbl_motores ( id ) ON DELETE CASCADE ON UPDATE CASCADE
+);
+CREATE TABLE test
+(
+    id INT UNSIGNED PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    number INT
+);
